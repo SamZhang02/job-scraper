@@ -2,6 +2,7 @@ import os
 import threading
 import schedule
 import asyncio
+import logging
 
 from collections.abc import Iterable
 from typing import Any
@@ -9,6 +10,8 @@ from queue import Queue
 
 from App.models.job_posting import JobPosting
 from App.util.job_posting_embedder import JobPostingEmbedder
+
+logger = logging.getLogger("discord")
 
 
 class JobPostingsSender:
@@ -45,7 +48,7 @@ class JobPostingsSender:
         new_postings = [
             posting for posting in all_postings if str(posting) not in old_postings
         ]
-        print(f"Got {len(new_postings)} new postings")
+        logger.info(f"Got {len(new_postings)} new postings")
 
         return new_postings
 
@@ -80,6 +83,6 @@ class JobPostingsSender:
         )
 
     def run(self):
-        print("Starting job posting sender...")
+        logger.info("Starting job posting sender...")
         thread = threading.Thread(target=self.start_sender, daemon=True)
         thread.start()

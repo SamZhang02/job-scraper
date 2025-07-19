@@ -1,10 +1,14 @@
-from queue import Queue
 import threading
-from App.models.job_posting import JobPosting
+import logging
 import schedule
 import time
 
+from queue import Queue
+
+from App.models.job_posting import JobPosting
 from App.scraper.scraper import Scraper
+
+logger = logging.getLogger("discord")
 
 
 class ScraperManager:
@@ -20,7 +24,7 @@ class ScraperManager:
 
     def scrape_job(self):
         for scraper in self.scrapers:
-            print(f"Running scraper for {scraper.get_source_name()}")
+            logger.info(f"Running scraper for {scraper.get_source_name()}")
             scraped_postings = scraper.scrape()
             for posting in scraped_postings:
                 self.queue.put(posting)
@@ -32,6 +36,6 @@ class ScraperManager:
             time.sleep(1)
 
     def run(self):
-        print("Starting scraper manager now.")
+        logger.info("Starting scraper manager now.")
         thread = threading.Thread(target=self.start_scheduler, daemon=True)
         thread.start()
