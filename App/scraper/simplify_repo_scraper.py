@@ -19,7 +19,7 @@ class SimplifyRepoScraper(Scraper):
         return response.json()
 
     def _convert_to_posting(self, posting: dict[str, Any]) -> JobPosting | None:
-        if not posting["active"]:
+        if not self._is_2026_ng_posting(posting):
             return None
 
         return JobPosting(
@@ -40,6 +40,9 @@ class SimplifyRepoScraper(Scraper):
         postings = [self._convert_to_posting(obj) for obj in response_json]
 
         return [posting for posting in postings if posting is not None]
+
+    def _is_2026_ng_posting(self, posting: dict[str, Any]) -> bool:
+        return posting["active"] and posting["date_posted"] > 1748761200
 
 
 if __name__ == "__main__":
