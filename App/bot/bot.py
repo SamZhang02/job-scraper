@@ -17,7 +17,8 @@ CHANNEL_ID = 1395437485290426529
 
 
 class Bot(discord.Client):
-    SCRAPING_INTERVAL_SECONDS: int = 60
+    INTERVAL_MINUTES: int = 5
+    INTERVAL_SECONDS: int = INTERVAL_MINUTES * 60
 
     async def on_ready(self):
         print(f"Logged on as {self.user}!")
@@ -27,13 +28,13 @@ class Bot(discord.Client):
 
         scraper_manager = ScraperManager(
             scrapers=scrapers,
-            interval_in_seconds=self.SCRAPING_INTERVAL_SECONDS,
+            interval_in_seconds=self.INTERVAL_SECONDS,
             queue=job_postings_queue,
         )
 
         job_postings_sender = JobPostingsSender(
             queue=job_postings_queue,
-            interval_in_seconds=self.SCRAPING_INTERVAL_SECONDS,
+            interval_in_seconds=self.INTERVAL_SECONDS,
             channel=self.get_channel(CHANNEL_ID),
         )
 

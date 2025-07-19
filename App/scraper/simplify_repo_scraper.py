@@ -32,7 +32,7 @@ class SimplifyRepoScraper(Scraper):
 
     @override
     def get_source_name(self) -> str:
-        return "Simplify Repo"
+        return "https://github.com/SimplifyJobs/New-Grad-Positions"
 
     @override
     def scrape(self) -> list[JobPosting]:

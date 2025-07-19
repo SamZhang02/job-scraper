@@ -1,7 +1,7 @@
-import time
 import os
 import threading
 import schedule
+import asyncio
 
 from collections.abc import Iterable
 from typing import Any
@@ -23,6 +23,7 @@ class JobPostingsSender:
         self.interval_in_seconds: int = interval_in_seconds
         self.channel: Any = channel
         self.persist_postings_path: str = persist_postings_path
+        self.loop = asyncio.get_event_loop()
 
     def _read_last_postings_state(self) -> set[str]:
         old_postings = []
@@ -30,7 +31,7 @@ class JobPostingsSender:
             return set()
 
         with open(self.persist_postings_path, "r") as fp:
-            old_postings = set(fp.readlines())
+            old_postings = set([line.strip() for line in fp.readlines()])
 
         return old_postings
 
@@ -41,17 +42,22 @@ class JobPostingsSender:
     def _extract_new_postings(
         self, old_postings: Iterable[str], all_postings: Iterable[JobPosting]
     ):
-        return [posting for posting in all_postings if str(posting) not in old_postings]
+        new_postings = [
+            posting for posting in all_postings if str(posting) not in old_postings
+        ]
+        print(f"Got {len(new_postings)} new postings")
 
-    def _send_postings(
+        return new_postings
+
+    async def _send_postings(
         self,
         postings: Iterable[JobPosting],
     ):
         for posting in postings:
             embed = JobPostingEmbedder.embed(posting)
-            self.channel.send(embed=embed)
+            await self.channel.send(embed=embed)
 
-    def deduplicate_and_send_postings(self):
+    async def deduplicate_and_send_postings(self):
         all_postings = set()
         while not self.queue.empty():
             all_postings.add(self.queue.get())
@@ -60,19 +66,18 @@ class JobPostingsSender:
         new_postings = self._extract_new_postings(
             already_posted_postings, list(all_postings)
         )
-        if new_postings:
-            self._send_postings(new_postings)
 
         self._persist_postings(all_postings)
 
+        if new_postings:
+            await self._send_postings(new_postings)
+
     def start_sender(self):
         schedule.every(self.interval_in_seconds).seconds.do(
-            self.deduplicate_and_send_postings
+            lambda: asyncio.run_coroutine_threadsafe(
+                self.deduplicate_and_send_postings(), self.loop
+            )
         )
-
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
 
     def run(self):
         print("Starting job posting sender...")

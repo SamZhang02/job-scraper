@@ -12,6 +12,7 @@ class JobPostingEmbedder:
                 title=posting.title,
                 url=posting.url,
             )
-            .add_field(name="Source", value=posting.source)
-            .add_field(name="Locations", value=posting.locations)
+            .add_field(name="Company", value=posting.company, inline=False)
+            .add_field(name="Locations", value=posting.locations, inline=False)
+            .add_field(name="Source", value=posting.source, inline=False)
         )

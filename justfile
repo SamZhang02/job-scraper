@@ -3,3 +3,7 @@ dev:
 
 test args:
 	uv run pytest {{args}}
+
+clean:
+	rm postings
+	rm ignore_this.txt
