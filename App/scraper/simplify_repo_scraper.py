@@ -25,7 +25,7 @@ class SimplifyRepoScraper(Scraper):
         return JobPosting(
             title=posting["title"],
             company=posting["company_name"],
-            locations=posting["locations"],
+            locations=", ".join(posting["locations"]),
             url=posting["url"],
             source=self.get_source_name(),
         )

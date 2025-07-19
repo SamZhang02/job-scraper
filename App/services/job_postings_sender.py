@@ -8,6 +8,7 @@ from typing import Any
 from queue import Queue
 
 from App.models.job_posting import JobPosting
+from App.util.job_posting_embedder import JobPostingEmbedder
 
 
 class JobPostingsSender:
@@ -47,7 +48,8 @@ class JobPostingsSender:
         postings: Iterable[JobPosting],
     ):
         for posting in postings:
-            self.channel.send(str(posting))
+            embed = JobPostingEmbedder.embed(posting)
+            self.channel.send(embed=embed)
 
     def deduplicate_and_send_postings(self):
         all_postings = set()

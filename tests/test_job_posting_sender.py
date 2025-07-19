@@ -1,11 +1,21 @@
 import pytest
 import time
-import threading
+
+from discord import Embed
 from queue import Queue
 from unittest.mock import MagicMock
 
 from App.services.job_postings_sender import JobPostingsSender
 from App.models.job_posting import JobPosting
+from App.util.job_posting_embedder import JobPostingEmbedder
+
+
+def extract_embed_data(embed: Embed):
+    return {
+        "title": embed.title,
+        "url": embed.url,
+        "fields": [(f.name, f.value) for f in embed.fields],
+    }
 
 
 def dummy_posting(title: str):
@@ -25,13 +35,23 @@ def test_job_postings_sender_input_output():
 
     sender.run()
 
-    queue.put(dummy_posting("JobA"))
+    dummyPostingA = dummy_posting("JobA")
+    dummyPostingB = dummy_posting("JobB")
+
+    queue.put(dummyPostingA)
     time.sleep(4)
 
-    queue.put(dummy_posting("JobA"))  # should be ignored
-    queue.put(dummy_posting("JobB"))  # should be sent
+    queue.put(dummyPostingA)  # should be ignored
+    queue.put(dummyPostingB)  # should be sent
     time.sleep(1)
 
-    sent = [call[0][0] for call in channel.send.call_args_list]
-    assert sent.count(str(dummy_posting("JobA"))) == 1
-    assert sent.count(str(dummy_posting("JobB"))) == 1
+    sent_embeds = [call.kwargs["embed"] for call in channel.send.call_args_list]
+
+    expected_embeds = [
+        extract_embed_data(JobPostingEmbedder.embed(dummyPostingA)),
+        extract_embed_data(JobPostingEmbedder.embed(dummyPostingB)),
+    ]
+
+    actual_embeds = [extract_embed_data(embed) for embed in sent_embeds]
+
+    assert actual_embeds == expected_embeds

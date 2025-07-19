@@ -1,5 +1,5 @@
 dev: 
 	uv run -m App.main
 
-test:
-	uv run pytest -s
+test args:
+	uv run pytest {{args}}
