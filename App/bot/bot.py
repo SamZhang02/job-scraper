@@ -21,7 +21,15 @@ class Bot(discord.Client):
     INTERVAL_MINUTES: int = 5
     INTERVAL_SECONDS: int = INTERVAL_MINUTES * 60
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.began_scraping: bool = False  # Flag to prevent reinitialization
+
     async def on_ready(self):
+        if self.began_scraping:
+            logger.info("Already scraping, skipping setup.")
+            return
+
         logger.info(f"Logged on as {self.user}!")
 
         job_postings_queue: Queue[JobPosting] = Queue()
@@ -41,6 +49,8 @@ class Bot(discord.Client):
 
         scraper_manager.run()
         job_postings_sender.run()
+
+        self.began_scraping = True
 
 
 def start_bot():
