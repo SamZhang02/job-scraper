@@ -1,15 +1,16 @@
-from typing import Any, override
 import requests
+from typing import Any, override
+from datetime import datetime
 
 from App.models.job_posting import JobPosting
 from App.scraper.scraper import Scraper
 
 
-class SimplifyRepoScraper(Scraper):
+class JobPulseScraper(Scraper):
 
     def __init__(
         self,
-        url: str = "https://raw.githubusercontent.com/SimplifyJobs/New-Grad-Positions/refs/heads/dev/.github/scripts/listings.json",
+        url: str = "https://job-pulse.uc.r.appspot.com/jobs/sde?yoe_less_than=1&page_number=1&page_size=99999",
     ) -> None:
         super().__init__()
         self.url: str = url
@@ -19,33 +20,34 @@ class SimplifyRepoScraper(Scraper):
         return response.json()
 
     def _convert_to_posting(self, posting: dict[str, Any]) -> JobPosting | None:
-        if not self._is_2026_ng_posting(posting):
+        date_str = posting["date_added"]
+
+        try:
+            dt = datetime.strptime(date_str, "%a, %d %b %Y %H:%M:%S %Z")
+        except ValueError:
             return None
+
+        timestamp = dt.timestamp()
+        if not timestamp > 1748761200:
+            return None
+
+        link = posting["apply_link"] if posting["apply_link"] else posting["link"]
 
         return JobPosting(
             title=posting["title"],
-            company=posting["company_name"],
-            locations=", ".join(posting["locations"]),
-            url=posting["url"],
+            company=posting["company"],
+            locations=posting["location"],
+            url=link,
             source=self.get_source_name(),
-            date_posted=float(posting["date_posted"]),
+            date_posted=timestamp,
         )
-
-    def _is_2026_ng_posting(self, posting: dict[str, Any]) -> bool:
-        return posting["active"] and posting["date_posted"] > 1748761200
 
     @override
     def get_source_name(self) -> str:
-        return "https://github.com/SimplifyJobs/New-Grad-Positions"
+        return "https://jobpulse.fyi/"
 
-    @override
     def scrape(self) -> list[JobPosting]:
         response_json = self._fetch_url()
         postings = [self._convert_to_posting(obj) for obj in response_json]
 
         return [posting for posting in postings if posting is not None]
-
-
-if __name__ == "__main__":
-    scraper = SimplifyRepoScraper()
-    scraper.scrape()

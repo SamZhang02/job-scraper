@@ -4,15 +4,16 @@ import logging
 from queue import Queue
 from dotenv import load_dotenv
 
-from App.models import job_posting
 from App.models.job_posting import JobPosting
 from App.scraper.scraper import Scraper
 from App.scraper.scraper_manager import ScraperManager
 from App.scraper.simplify_repo_scraper import SimplifyRepoScraper
+from App.scraper.job_pulse_scraper import JobPulseScraper
 from App.services.job_postings_sender import JobPostingsSender
 
 
 CHANNEL_ID = 1395165798875533312
+TEST_CHANNEL_ID = 1395437485290426529
 
 logger = logging.getLogger("discord")
 
@@ -23,7 +24,9 @@ class Bot(discord.Client):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.began_scraping: bool = False  # Flag to prevent reinitialization
+
+        # Flag to prevent reinitializing threads when the bot disconnects and reconnects
+        self.began_scraping: bool = False
 
     async def on_ready(self):
         if self.began_scraping:
@@ -33,7 +36,7 @@ class Bot(discord.Client):
         logger.info(f"Logged on as {self.user}!")
 
         job_postings_queue: Queue[JobPosting] = Queue()
-        scrapers: list[Scraper] = [SimplifyRepoScraper()]
+        scrapers: list[Scraper] = [SimplifyRepoScraper(), JobPulseScraper()]
 
         scraper_manager = ScraperManager(
             scrapers=scrapers,

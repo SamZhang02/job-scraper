@@ -25,7 +25,15 @@ class ScraperManager:
     def scrape_job(self):
         for scraper in self.scrapers:
             logger.info(f"Running scraper for {scraper.get_source_name()}")
-            scraped_postings = scraper.scrape()
+
+            try:
+                scraped_postings = scraper.scrape()
+            except Exception as e:
+                logger.error(
+                    f"Failed to scrape for {scraper.get_source_name()}, error: {e}"
+                )
+                return
+
             for posting in scraped_postings:
                 self.queue.put(posting)
 

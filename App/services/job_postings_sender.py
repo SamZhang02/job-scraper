@@ -7,6 +7,7 @@ import logging
 from collections.abc import Iterable
 from typing import Any
 from queue import Queue
+from time import sleep
 
 from App.models.job_posting import JobPosting
 from App.util.job_posting_embedder import JobPostingEmbedder
@@ -59,6 +60,7 @@ class JobPostingsSender:
         for posting in postings:
             embed = JobPostingEmbedder.embed(posting)
             await self.channel.send(embed=embed)
+            sleep(0.1)  # Prevent rate limit
 
     async def deduplicate_and_send_postings(self):
         all_postings = set()
