@@ -14,4 +14,10 @@ The entrypoint is locatd at `main.py`. To self-host:
 0. Have a `DISCORD_TOKEN` in your `.env`
 1. Install dependencies from `pyproject.toml` 
 2. Change my hardcoded channel ID and polling interval in `App/bot/bot.py`
-3. Run `main.py`
+3. Run `main.py`, optionally:
+
+```
+just host
+```
+
+Runs the application in a docker container 
