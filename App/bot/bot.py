@@ -15,8 +15,7 @@ from App.services.job_postings_sender import JobPostingsSender
 CHANNEL_ID = 1395165798875533312
 TEST_CHANNEL_ID = 1395437485290426529
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
-
+DATA_DIR = os.path.join('.', "data")
 POSTINGS_FILE = os.path.join(DATA_DIR, "postings")
 
 logger = logging.getLogger("discord")
