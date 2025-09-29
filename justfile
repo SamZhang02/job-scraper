@@ -7,3 +7,6 @@ test *args:
 clean:
 	rm postings
 	rm ignore_this.txt
+
+host:
+	docker compose up -d --build

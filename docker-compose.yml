@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  discord-bot:
+    build: .
+    container_name: discord-bot
+    env_file:
+      - .env 
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
