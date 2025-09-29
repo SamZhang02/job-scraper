@@ -17,7 +17,7 @@ TEST_CHANNEL_ID = 1395437485290426529
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
-POSTINGS_FILE = os.path.join(DATA_DIR, "postings.json")
+POSTINGS_FILE = os.path.join(DATA_DIR, "postings")
 
 logger = logging.getLogger("discord")
 
