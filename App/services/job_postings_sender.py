@@ -14,6 +14,11 @@ from App.util.job_posting_embedder import JobPostingEmbedder
 
 logger = logging.getLogger("discord")
 
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+os.makedirs(DATA_DIR, exist_ok=True)
+
+POSTINGS_FILE = os.path.join(DATA_DIR, "postings.json")
+
 
 class JobPostingsSender:
     def __init__(

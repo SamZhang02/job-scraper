@@ -15,7 +15,13 @@ from App.services.job_postings_sender import JobPostingsSender
 CHANNEL_ID = 1395165798875533312
 TEST_CHANNEL_ID = 1395437485290426529
 
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+
+POSTINGS_FILE = os.path.join(DATA_DIR, "postings.json")
+
 logger = logging.getLogger("discord")
+
+
 
 
 class Bot(discord.Client):
@@ -48,6 +54,7 @@ class Bot(discord.Client):
             queue=job_postings_queue,
             interval_in_seconds=self.INTERVAL_SECONDS,
             channel=self.get_channel(CHANNEL_ID),
+            persist_postings_path=POSTINGS_FILE
         )
 
         scraper_manager.run()
@@ -57,6 +64,8 @@ class Bot(discord.Client):
 
 
 def start_bot():
+    os.makedirs(DATA_DIR, exist_ok=True)
+
     dotenv_loaded = load_dotenv()
     token = os.getenv("DISCORD_TOKEN")
 
