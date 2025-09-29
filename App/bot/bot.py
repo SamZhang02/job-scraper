@@ -64,6 +64,7 @@ class Bot(discord.Client):
 
 def start_bot():
     os.makedirs(DATA_DIR, exist_ok=True)
+    logger.info(f"Will write postings to {POSTINGS_FILE}")
 
     dotenv_loaded = load_dotenv()
     token = os.getenv("DISCORD_TOKEN")
