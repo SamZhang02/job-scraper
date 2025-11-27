@@ -7,7 +7,7 @@ import pytest
 from App.models.job_posting import JobPosting
 from App.scraper.scraper import Scraper
 from App.scraper.scraper_manager import ScraperManager
-from App.util.typing_compat import override
+from typing import override
 
 
 NOW = 1_750_000_000.0

@@ -4,7 +4,7 @@ import requests
 
 from App.models.job_posting import JobPosting
 from App.scraper.scraper import Scraper
-from App.util.typing_compat import override
+from typing import override
 
 BLOCKED_COMPANIES = {
     "https://simplify.jobs/c/Jerry",
@@ -117,7 +117,11 @@ class SimplifyRepoScraper(Scraper):
         )
 
     def _is_2026_ng_posting(self, posting: dict[str, Any]) -> bool:
-        if not (posting.get("active") and posting.get("date_posted") and posting["date_posted"] > 1748761200):
+        if not (
+            posting.get("active")
+            and posting.get("date_posted")
+            and posting["date_posted"] > 1748761200
+        ):
             return False
 
         if self._is_blocked_company(posting):

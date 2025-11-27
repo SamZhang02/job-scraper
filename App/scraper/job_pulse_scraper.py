@@ -5,7 +5,7 @@ import requests
 
 from App.models.job_posting import JobPosting
 from App.scraper.scraper import Scraper
-from App.util.typing_compat import override
+from typing import override
 
 
 class JobPulseScraper(Scraper):
