@@ -1,12 +1,16 @@
 import time
 import threading
 from queue import Queue, Empty
-from typing import override
+
 import pytest
 
 from App.models.job_posting import JobPosting
 from App.scraper.scraper import Scraper
 from App.scraper.scraper_manager import ScraperManager
+from App.util.typing_compat import override
+
+
+NOW = 1_750_000_000.0
 
 
 class DummyScraper1(Scraper):
@@ -16,7 +20,16 @@ class DummyScraper1(Scraper):
 
     @override
     def scrape(self):
-        return [JobPosting("job 1", "company", "NYC, NJ", "url", "source")]
+        return [
+            JobPosting(
+                "job 1",
+                "company",
+                "NYC, NJ",
+                "url",
+                "source",
+                NOW,
+            )
+        ]
 
 
 class DummyScraper2(Scraper):
@@ -27,8 +40,8 @@ class DummyScraper2(Scraper):
     @override
     def scrape(self):
         return [
-            JobPosting("job 2", "company", "NYC", "url", "source"),
-            JobPosting("job 3", "company", "SF", "url", "source"),
+            JobPosting("job 2", "company", "NYC", "url", "source", NOW),
+            JobPosting("job 3", "company", "SF", "url", "source", NOW),
         ]
 
 
@@ -57,6 +70,6 @@ def test_scraper_manager_integration():
 
     titles = collected
 
-    assert JobPosting("job 1", "company", "NYC, NJ", "url", "source") in titles
-    assert JobPosting("job 2", "company", "NYC", "url", "source") in titles
-    assert JobPosting("job 3", "company", "SF", "url", "source") in titles
+    assert JobPosting("job 1", "company", "NYC, NJ", "url", "source", NOW) in titles
+    assert JobPosting("job 2", "company", "NYC", "url", "source", NOW) in titles
+    assert JobPosting("job 3", "company", "SF", "url", "source", NOW) in titles

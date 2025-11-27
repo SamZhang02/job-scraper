@@ -1,9 +1,11 @@
-import requests
-from typing import Any, override
 from datetime import datetime
+from typing import Any
+
+import requests
 
 from App.models.job_posting import JobPosting
 from App.scraper.scraper import Scraper
+from App.util.typing_compat import override
 
 
 class JobPulseScraper(Scraper):

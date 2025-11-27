@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import override
+
+from App.util.typing_compat import override
 
 PosixTime = float
 
