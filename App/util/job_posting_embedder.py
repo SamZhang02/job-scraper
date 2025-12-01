@@ -5,6 +5,7 @@ from discord import Embed
 from App.models.job_posting import JobPosting
 
 FAANG_PLUS = {
+    "affirm",
     "airbnb",
     "adobe",
     "amazon",
@@ -73,7 +74,7 @@ class JobPostingEmbedder:
     def _format_company(posting: JobPosting) -> str:
         company = posting.company
         if company and company.strip().lower() in FAANG_PLUS:
-            return f"🔥 @All {company}"
+            return f"🔥 {company}"
         return company
 
     @staticmethod
