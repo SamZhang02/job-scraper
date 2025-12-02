@@ -44,9 +44,10 @@ class JobPostingsSender:
 
         return old_postings
 
-    def _persist_postings(self, postings: Iterable[JobPosting]) -> None:
+    def _persist_postings(self, postings: Iterable[str]) -> None:
+        """Persist the provided posting identifiers."""
         with open(self.persist_postings_path, "w") as fp:
-            _ = fp.write("\n".join([str(posting) for posting in postings]))
+            _ = fp.write("\n".join(postings))
 
     def _extract_new_postings(
         self, old_postings: Iterable[str], all_postings: Iterable[JobPosting]
@@ -77,7 +78,10 @@ class JobPostingsSender:
             already_posted_postings, list(all_postings)
         )
 
-        self._persist_postings(all_postings)
+        known_postings = already_posted_postings.union(
+            [str(posting) for posting in all_postings]
+        )
+        self._persist_postings(known_postings)
 
         if new_postings:
             await self._send_postings(new_postings)
